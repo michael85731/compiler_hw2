@@ -1,0 +1,18 @@
+程式開發：
+用Flex, BISON與GCC，開發測試時皆使用"lazy.sh"這隻Shell Script編譯與執行
+
+scanner.l的變更
+1. 由於需要回傳token，故在頂端部分多include了parser.tab.h這隻定義token的header檔
+2. 所有token的動作皆改為return token
+3. 有資料型態相關的關鍵字除了回傳token外，也會在每次讀到時寫入yylval讓symbol table能夠寫入
+4. 實際資料內容，string, number, ID也跟資料型態關鍵字相同，也會將內容寫進yylval
+5. 將symbol table的實作搬移到parser，另新增returnLineCount Function用於yyerror時告訴我們壞掉的行數
+
+parser.y的Symbol Table實作註解
+1. Symbol Table的欄位如下，Name, Type, Contnet，分別代表變數名稱、型態與實際內容
+2. 實際Implement的時候是一個2維陣列，第一維代表Table位置，第二維代表在此Table中的哪個位置
+3. 只能接受一層Function定義，無法實現Nested Function的判斷
+4. 變數宣告必須在Function本身的最上方，否則會出錯
+5. 存入Function時，Type代表回傳值，Content則代表此Function內所有宣告變數在哪張Symbo Table的位置
+6. 尋找Symbol Table時只會尋找0與本身的Table位置，故無法實現Nested Function
+7. 目前沒有實作更新Symbol Table的方法
